@@ -348,6 +348,36 @@
     </div>
 </div>
 </div>
+
+<div id="modal-reject-collector" class="hidden fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl space-y-6 animate-slide-up">
+        <div class="text-center">
+            <h3 class="font-black text-gray-800 text-sm uppercase tracking-widest">Konfirmasi Penolakan</h3>
+            <p class="text-[9px] text-red-500 font-bold mt-1 uppercase italic">*Penolakan akan mengembalikan stok ke Bank Sampah</p>
+        </div>
+
+        <div>
+            <label class="text-[9px] font-bold text-gray-400 uppercase mb-2 block tracking-widest">Pilih Alasan Penolakan</label>
+            <select id="reject-reason-select" class="w-full p-4 bg-gray-50 border rounded-2xl text-xs font-bold outline-none focus:border-red-500">
+                <option value="MISMATCH">Rincian Barang Tidak Sesuai</option>
+                <option value="QUALITY">Kualitas Sampah Tidak Layak</option>
+                <option value="OVERBUDGET">Dana Pengepul Tidak Mencukupi</option>
+                <option value="OTHER">Lainnya (Lihat Catatan)</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="text-[9px] font-bold text-gray-400 uppercase mb-2 block tracking-widest">Catatan (Opsional)</label>
+            <textarea id="reject-reason-note" placeholder="Tambahkan alasan detail penolakan Anda di sini..." class="w-full p-4 bg-gray-50 border rounded-2xl text-xs h-24 outline-none focus:border-red-500"></textarea>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+            <button onclick="executeRejectWithStockReturn()" class="py-4 bg-red-600 text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg active:scale-95 transition-transform">Tolak & Kembalikan Stok</button>
+            <button onclick="closeRejectModal()" class="py-3 text-[10px] font-bold uppercase text-gray-400">Batal</button>
+        </div>
+    </div>
+</div>
+
 </div>
 
 <script>
@@ -399,16 +429,38 @@ function executePayment(method) {
     }
 }
 
-// Alasan Penolakan (Fungsi Execute Reject yang diperbarui)
-function executeRejectCollector() {
-    const reason = document.getElementById('reason-select').value;
-    const note = document.getElementById('reason-note').value;
-    
-    if(!reason) return alert("Pilih alasan penolakan!");
-    
-    alert(`Request Ditolak!\nAlasan: ${reason}\nCatatan: ${note || '-'}\n\nBank Sampah akan diminta melakukan request ulang.`);
-    closeRejectModal();
-    showScreen('screen-collector-dash');
+// Fungsi untuk membuka modal penolakan
+function openRejectModal() {
+    document.getElementById('modal-reject-collector').classList.remove('hidden');
+}
+
+// Fungsi untuk menutup modal penolakan
+function closeRejectModal() {
+    document.getElementById('modal-reject-collector').classList.add('hidden');
+}
+
+// Eksekusi Penolakan dengan Pengembalian Stok
+function executeRejectWithStockReturn() {
+    const reason = document.getElementById('reject-reason-select').value;
+    const note = document.getElementById('reject-reason-note').value;
+
+    const confirmAction = confirm("Konfirmasi Tolak Request? Stok akan otomatis kembali ke gudang Bank Sampah.");
+
+    if (confirmAction) {
+        // Simulasi notifikasi sistem
+        alert(
+            "REQUEST DITOLAK!\n" +
+            "Alasan: " + reason + "\n" +
+            "Catatan: " + (note || "-") + "\n\n" +
+            "Sistem: Data stok berhasil dikembalikan ke Management Stok Bank Sampah.\n" +
+            "Status: REJECTED"
+        );
+
+        // Reset input dan kembali ke dashboard
+        document.getElementById('reject-reason-note').value = "";
+        closeRejectModal();
+        showScreen('screen-collector-dash');
+    }
 }
 
 // 1. Fungsi Pilih Metode
