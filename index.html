@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Green Collector - Mobile Banking Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0fdf4; }
+        .mobile-view { width: 100%; max-width: 480px; min-height: 100vh; margin: 0 auto; background: #ffffff; position: relative; overflow-x: hidden; }
+        .bg-banking-green { background: linear-gradient(135deg, #065f46 0%, #059669 100%); }
+        .hidden { display: none; }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        .status-pill { font-size: 9px; padding: 3px 10px; border-radius: 999px; font-weight: 800; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="mobile-view shadow-2xl">
+
+    <div id="screen-collector-dash">
+        <div class="p-6 bg-[#059669] text-white rounded-b-[40px] pb-20">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <p class="text-[10px] opacity-80 uppercase tracking-widest font-bold">Selamat Pagi,</p>
+                    <h1 class="text-lg font-bold">PT Pengepul Jaya Utama</h1>
+                </div>
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center border border-white/30 text-xl">👤</div>
+            </div>
+            
+            <div class="bg-[#059669] p-6 rounded-3xl text-white shadow-xl border border-white/10 relative overflow-hidden">
+                <div class="z-10 relative">
+                    <p class="text-[10px] font-bold opacity-80 uppercase tracking-tighter">Saldo Rekening Operasional</p>
+                    <h2 class="text-3xl font-black tracking-tight mt-1">Rp 150.000.000</h2>
+                    <div class="mt-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                        <span class="text-[9px] font-bold opacity-70 uppercase tracking-widest">CBS Linked & Active</span>
+                    </div>
+                </div>
+                <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl italic font-black">Rp</div>
+            </div>
+        </div>
+
+        <div class="p-6 -mt-10 grid grid-cols-2 gap-4">
+            <div onclick="showScreen('screen-collector-report')" class="bg-white p-5 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center gap-3 cursor-pointer active:scale-95 transition-transform">
+                <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl">📊</div>
+                <span class="text-[10px] font-black text-gray-600 uppercase tracking-widest">Laporan</span>
+            </div>
+            <div onclick="showScreen('screen-price-master')" class="bg-white p-5 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center gap-3 cursor-pointer active:scale-95 transition-transform">
+                <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-2xl">💰</div>
+                <span class="text-[10px] font-black text-gray-600 uppercase tracking-widest leading-tight text-center">Master Harga<br>Limbah</span>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4 px-1">
+                <h3 class="text-[11px] font-black text-gray-700 uppercase tracking-widest">Permintaan Pickup (3)</h3>
+                <span class="text-[10px] text-green-600 font-bold">Lihat Semua</span>
+            </div>
+            <div class="space-y-4">
+                <div onclick="showDetailPickup()" class="p-4 bg-white border border-green-100 rounded-3xl card-shadow flex justify-between items-center cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-2xl">🚚</div>
+                        <div>
+                            <p class="text-xs font-black text-gray-800">Bank Sampah Unit A</p>
+                            <p class="text-[9px] text-green-600 font-bold mt-1">Total: 100.00 Kg</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-black text-gray-800 tracking-tighter">Rp 350.000</p>
+                        <span class="status-pill bg-blue-50 text-blue-600 mt-1 inline-block">Waiting</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-price-master" class="hidden">
+        <div class="p-4 flex items-center border-b bg-white sticky top-0 z-10">
+            <button onclick="showScreen('screen-collector-dash')" class="text-2xl mr-4 text-green-800">←</button>
+            <h1 class="font-bold text-gray-800 text-sm uppercase">Master Harga Sampah</h1>
+        </div>
+        <div class="p-5 space-y-4 pb-24">
+            <div class="space-y-3">
+                <div class="relative">
+                    <input type="text" id="search-price" oninput="filterPriceMaster()" placeholder="Cari nama barang..." class="w-full p-3 pl-10 border rounded-xl text-xs outline-none focus:border-green-600 bg-white">
+                    <span class="absolute left-3 top-3 opacity-30 text-sm">🔍</span>
+                </div>
+                <select id="filter-category" onchange="filterPriceMaster()" class="w-full p-3 border rounded-xl text-[10px] font-bold uppercase tracking-widest text-gray-500 bg-white outline-none">
+                    <option value="ALL">Semua Kategori</option>
+                    <option value="PLASTIK">Kategori: PET</option>
+                    <option value="LOGAM">Kategori: HDPE</option>
+                </select>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex gap-3">
+                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">i</div>
+                <p class="text-[10px] text-blue-800 italic leading-tight">Harga acuan dari Back Office. Pengepul meninjau sebelum approve.</p>
+            </div>
+            <div class="px-4 py-2 flex justify-between text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                <div class="w-1/2">Nama Barang / Kategori</div>
+                <div class="w-1/2 text-right">Harga per Kg</div>
+            </div>
+            <div id="price-master-list" class="space-y-2">
+                <div class="price-item p-4 border rounded-2xl bg-white shadow-sm flex justify-between items-center border-l-4 border-l-green-600" data-name="Plastik PET" data-cat="PLASTIK">
+                    <div class="w-1/2"><p class="text-xs font-black text-gray-800 uppercase">Plastik PET</p><p class="text-[9px] text-gray-400 font-bold uppercase mt-0.5">Kat: Plastik</p></div>
+                    <div class="w-1/2 text-right"><p class="text-sm font-black text-green-700">Rp 3.500</p></div>
+                </div>
+            </div>
+            <button class="w-full py-4 mt-4 bg-gray-50 text-gray-400 rounded-2xl font-bold text-[10px] uppercase border-2 border-dashed">Minta Perubahan Harga ke BO</button>
+        </div>
+    </div>
+
+    <div id="screen-collector-report" class="hidden">
+        <div class="p-4 flex items-center border-b bg-white sticky top-0 z-10">
+            <button onclick="showScreen('screen-collector-dash')" class="text-2xl mr-4 text-green-800">←</button>
+            <h1 class="font-bold text-gray-800 text-sm uppercase">Reporting</h1>
+        </div>
+        <div class="p-5 space-y-6 pb-24">
+            <div class="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm space-y-3">
+                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Rentang Laporan</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="date" class="w-full p-2.5 border rounded-xl text-[10px] font-bold text-gray-600 bg-gray-50 outline-none">
+                    <input type="date" class="w-full p-2.5 border rounded-xl text-[10px] font-bold text-gray-600 bg-gray-50 outline-none">
+                </div>
+                <button class="w-full py-3 bg-green-700 text-white rounded-xl text-[10px] font-black uppercase shadow-md">Tampilkan Laporan</button>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-green-600 p-4 rounded-3xl text-white shadow-md">
+                    <p class="text-[8px] font-bold uppercase opacity-80">Total Pengeluaran</p>
+                    <p class="text-sm font-black mt-1">Rp 12.450.000</p>
+                </div>
+                <div class="bg-[#065f46] p-4 rounded-3xl text-white shadow-md">
+                    <p class="text-[8px] font-bold uppercase opacity-80">Total Berat Pickup</p>
+                    <p class="text-sm font-black mt-1">3.250,5 Kg</p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">Audit Trail (Log)</h3>
+                <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex gap-4">
+                    <div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center shrink-0">✓</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <p class="text-[10px] font-black text-gray-800 uppercase tracking-tighter">Pembayaran Sukses (CBS)</p>
+                            <span class="text-[8px] text-gray-400 font-bold">09:05</span>
+                        </div>
+                        <p class="text-[9px] text-gray-500 mt-1">Pembayaran Rp 350.000 kepada Bank Sampah Unit A berhasil diproses.</p>
+                        <p class="text-[8px] font-bold text-blue-600 mt-1">Actor: System/Pengepul-Admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-collector-detail" class="hidden">
+    <div class="p-4 flex items-center border-b bg-white sticky top-0 z-10">
+        <button onclick="showScreen('screen-collector-dash')" class="text-2xl mr-4 text-green-800">←</button>
+        <h1 class="font-bold text-gray-800 text-sm uppercase">Konfirmasi Pembayaran</h1>
+    </div>
+
+    <div class="p-6 space-y-6 pb-40">
+        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex justify-between items-center">
+            <div>
+                <p class="text-[9px] font-bold text-gray-400 uppercase">Bank Sampah</p>
+                <p class="text-xs font-black text-gray-800">Bank Sampah Unit A</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[9px] font-bold text-gray-400 uppercase">ID Request</p>
+                <p class="text-xs font-bold text-blue-600">GG-REQ-001</p>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <h3 class="text-[10px] font-black text-gray-700 uppercase tracking-widest ml-1">Detail Barang Pickup</h3>
+            <div id="detail-item-list" class="space-y-2">
+                <div class="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    <div>
+                        <p class="text-[11px] font-black text-gray-800 uppercase">Plastik PET</p>
+                        <p class="text-[9px] text-gray-400 font-bold">60.00 Kg x Rp 3.500</p>
+                    </div>
+                    <p class="text-xs font-black text-gray-700">Rp 210.000</p>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    <div>
+                        <p class="text-[11px] font-black text-gray-800 uppercase">Plastik HDPE</p>
+                        <p class="text-[9px] text-gray-400 font-bold">40.00 Kg x Rp 3.000</p>
+                    </div>
+                    <p class="text-xs font-black text-gray-700">Rp 120.000</p>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    <div>
+                        <p class="text-[11px] font-black text-gray-800 uppercase">Logam Besi</p>
+                        <p class="text-[9px] text-gray-400 font-bold">4.45 Kg x Rp 4.500</p>
+                    </div>
+                    <p class="text-xs font-black text-gray-700">Rp 20.000</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-green-50 p-5 rounded-3xl border border-green-100 shadow-inner">
+            <div class="flex justify-between items-center text-[10px] font-bold text-green-800 uppercase opacity-70">
+                <span>Total Berat</span>
+                <span>104.45 Kg</span>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+                <span class="text-xs font-black text-green-900 uppercase">Total Bayar</span>
+                <span class="text-xl font-black text-green-700">Rp 350.000</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 pt-4">
+            <button onclick="openRejectModal()" class="py-4 border-2 border-red-100 text-red-600 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-red-50">Tolak</button>
+            <button onclick="openTransferModal()" class="py-4 bg-[#059669] text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-transform">Bayar</button>
+        </div>
+    </div>
+</div>
+<div id="modal-transfer-type" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6">
+    <div class="bg-white w-full max-w-sm rounded-t-[40px] sm:rounded-[40px] p-8 shadow-2xl space-y-6 animate-slide-up">
+        <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-2 sm:hidden"></div>
+        <h3 class="font-black text-gray-800 text-sm uppercase tracking-widest text-center">Pilih Metode Transfer</h3>
+        
+        <div class="space-y-3">
+            <button onclick="executePayment('Sesama Bank')" class="w-full p-5 border-2 border-green-100 rounded-3xl flex items-center justify-between hover:border-green-600 transition-colors group text-left">
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl">🏦</span>
+                    <div>
+                        <p class="text-xs font-black text-gray-800">Sesama Bank</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Biaya Admin: Gratis</p>
+                    </div>
+                </div>
+                <span class="text-green-600">→</span>
+            </button>
+
+            <button onclick="executePayment('Antar Bank')" class="w-full p-5 border-2 border-green-100 rounded-3xl flex items-center justify-between hover:border-green-600 transition-colors group text-left">
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl">🌐</span>
+                    <div>
+                        <p class="text-xs font-black text-gray-800">Transfer Antar Bank</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Biaya Admin: Rp 2.500</p>
+                    </div>
+                </div>
+                <span class="text-green-600">→</span>
+            </button>
+        </div>
+        
+        <button onclick="closeTransferModal()" class="w-full py-3 text-[10px] font-bold uppercase text-gray-400">Batal</button>
+    </div>
+</div> <div id="screen-interbank-payment" class="hidden">
+    <div class="p-4 flex items-center border-b bg-white sticky top-0 z-10">
+        <button onclick="showScreen('screen-collector-detail')" class="text-2xl mr-4 text-green-800">←</button>
+        <h1 class="font-bold text-gray-800 text-sm uppercase">Transfer Antar Bank</h1>
+    </div>
+
+    <div class="p-6 space-y-6 pb-24">
+        <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100">
+            <p class="text-[10px] text-yellow-800 leading-tight italic">
+                Lakukan pembayaran ke rekening bank sampah bank yang sudah anda pilih.
+            </p>
+        </div>
+
+        <div>
+            <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block tracking-widest">Pilih Bank Tujuan</label>
+            <select class="w-full p-4 bg-gray-50 border rounded-2xl text-xs font-bold outline-none focus:border-green-600">
+                <option>BANK MANDIRI (008)</option>
+                <option>BANK BNI (009)</option>
+                <option>BANK BRI (002)</option>
+            </select>
+        </div>
+
+        <div class="space-y-4">
+            <div class="p-4 bg-white border rounded-2xl flex justify-between items-center shadow-sm">
+                <div>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase">Total Harus Dibayar</p>
+                    <p id="val-total" class="text-lg font-black text-green-700 italic">Rp 352.500</p>
+                </div>
+                <button onclick="copyToClipboard('352500')" class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">SALIN</button>
+            </div>
+
+            <div class="p-4 bg-white border rounded-2xl flex justify-between items-center shadow-sm">
+                <div>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase">Rekening Bank Sampah</p>
+                    <p id="val-rek" class="text-sm font-black text-gray-800">8822 0981 1234 5566</p>
+                </div>
+                <button onclick="copyToClipboard('8822098112345566')" class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">SALIN</button>
+            </div>
+
+            <div class="p-4 bg-white border rounded-2xl flex justify-between items-center shadow-sm border-dashed">
+                <div>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase">Nomor Referensi</p>
+                    <p id="val-ref" class="text-sm font-black text-blue-900 tracking-widest">GG-REF-77621</p>
+                </div>
+                <button onclick="copyToClipboard('GG-REF-77621')" class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">SALIN</button>
+            </div>
+        </div>
+
+        <button onclick="showScreen('screen-upload-proof')" class="w-full py-4 bg-green-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg">Sudah Transfer</button>
+    </div>
+</div>
+
+<div id="screen-upload-proof" class="hidden">
+    <div class="p-4 flex items-center border-b bg-white sticky top-0 z-10">
+        <button onclick="showScreen('screen-interbank-payment')" class="text-2xl mr-4 text-green-800">←</button>
+        <h1 class="font-bold text-gray-800 text-sm uppercase">Verifikasi Pembayaran</h1>
+    </div>
+
+    <div class="p-6 space-y-6 text-center">
+        <p class="text-[11px] font-bold text-gray-600">Lampirkan bukti pembayaran antar bank untuk validasi sistem.</p>
+        
+        <div onclick="alert('Buka Galeri/Kamera...')" class="w-full h-48 border-2 border-dashed border-gray-200 rounded-[40px] flex flex-col items-center justify-center bg-gray-50 cursor-pointer hover:bg-green-50 transition-colors">
+            <span class="text-4xl mb-2">📸</span>
+            <p class="text-[10px] font-bold text-gray-400 uppercase">Klik Upload Bukti</p>
+        </div>
+
+        <button onclick="approveInterbank()" class="w-full py-4 bg-[#059669] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">Approve & Selesaikan</button>
+    </div>
+</div>
+
+<div id="screen-internal-transfer" class="hidden">
+    <div class="p-4 flex items-center border-b bg-white sticky top-0 z-10">
+        <button onclick="showScreen('screen-collector-detail')" class="text-2xl mr-4 text-green-800">←</button>
+        <h1 class="font-bold text-gray-800 text-sm uppercase italic">CBS Internal Transfer</h1>
+    </div>
+
+    <div class="p-6 space-y-6">
+        <div class="bg-[#059669] p-6 rounded-3xl text-white shadow-lg">
+            <p class="text-[9px] font-bold opacity-70 uppercase mb-4 tracking-widest">Konfirmasi Pindah Dana</p>
+            <div class="space-y-4">
+                <div class="flex justify-between border-b border-white/20 pb-2">
+                    <span class="text-[10px] font-bold opacity-60 uppercase">Tujuan</span>
+                    <span class="text-xs font-black">Bank Sampah Unit A</span>
+                </div>
+                <div class="flex justify-between border-b border-white/20 pb-2">
+                    <span class="text-[10px] font-bold opacity-60 uppercase">Rekening Tujuan</span>
+                    <span class="text-xs font-black tracking-widest">8822 0981 1234 5566</span>
+                </div>
+                <div class="flex justify-between border-b border-white/20 pb-2">
+                    <span class="text-[10px] font-bold opacity-60 uppercase">Nominal</span>
+                    <span class="text-lg font-black">Rp 350.000</span>
+                </div>
+                <p class="text-[8px] italic opacity-60 leading-tight">*Pembayaran penjualan sampah otomatis menambah saldo Bank Sampah dan memotong stok.</p>
+            </div>
+        </div>
+
+        <button onclick="executeInternalPay()" class="w-full py-4 bg-green-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">Konfirmasi Pindah Dana</button>
+    </div>
+</div>
+
+       
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+    function showScreen(id) {
+        // Daftar semua screen ID secara sejajar
+        const screens = ['screen-collector-dash', 'screen-collector-detail', 'screen-price-master', 'screen-collector-report'];
+        screens.forEach(s => {
+            const el = document.getElementById(s);
+            if(el) el.classList.add('hidden');
+        });
+        const target = document.getElementById(id);
+        if(target) target.classList.remove('hidden');
+    }
+
+    function filterPriceMaster() {
+        const searchTerm = document.getElementById('search-price').value.toLowerCase();
+        const catFilter = document.getElementById('filter-category').value;
+        const items = document.querySelectorAll('.price-item');
+        items.forEach(item => {
+            const name = item.getAttribute('data-name').toLowerCase();
+            const cat = item.getAttribute('data-cat');
+            const matchSearch = name.includes(searchTerm);
+            const matchCat = (catFilter === 'ALL' || cat === catFilter);
+            item.classList.toggle('hidden', !(matchSearch && matchCat));
+        });
+    }
+
+    function showDetailPickup() { showScreen('screen-collector-detail'); }
+    function openRejectModal() { document.getElementById('modal-reject-collector').classList.remove('hidden'); }
+    function closeRejectModal() { document.getElementById('modal-reject-collector').classList.add('hidden'); }
+    function confirmSettle() { if(confirm("Bayar Rp 350.000?")) alert("Sukses! Stok Bank Sampah Terpotong."); showScreen('screen-collector-dash'); }
+
+// Navigasi Modal Transfer
+function openTransferModal() { 
+    document.getElementById('modal-transfer-type').classList.remove('hidden'); 
+}
+
+function closeTransferModal() { 
+    document.getElementById('modal-transfer-type').classList.add('hidden'); 
+}
+
+// Eksekusi Pembayaran Final
+function executePayment(method) {
+    const ok = confirm(`Anda memilih ${method}. Lanjutkan pembayaran Rp 350.000 ke Bank Sampah Unit A?`);
+    if(ok) {
+        alert(`Transfer Berhasil via ${method}! Status transaksi diperbarui menjadi SUCCESS & Stok terpotong otomatis.`);
+        closeTransferModal();
+        showScreen('screen-collector-dash');
+    }
+}
+
+// Alasan Penolakan (Fungsi Execute Reject yang diperbarui)
+function executeRejectCollector() {
+    const reason = document.getElementById('reason-select').value;
+    const note = document.getElementById('reason-note').value;
+    
+    if(!reason) return alert("Pilih alasan penolakan!");
+    
+    alert(`Request Ditolak!\nAlasan: ${reason}\nCatatan: ${note || '-'}\n\nBank Sampah akan diminta melakukan request ulang.`);
+    closeRejectModal();
+    showScreen('screen-collector-dash');
+}
+
+// 1. Fungsi Pilih Metode
+function executePayment(method) {
+    closeTransferModal();
+    if(method === 'Sesama Bank') {
+        showScreen('screen-internal-transfer');
+    } else {
+        showScreen('screen-interbank-payment');
+    }
+}
+
+// 2. Fungsi Salin (Copy to Clipboard)
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Berhasil disalin: " + text);
+    });
+}
+
+// 3. Eksekusi Antar Bank (Upload Bukti)
+function approveInterbank() {
+    alert("Bukti pembayaran sedang diverifikasi... Status Request berubah menjadi SUCCESS & Stok terpotong.");
+    showScreen('screen-collector-dash');
+}
+
+// 4. Eksekusi Sesama Bank (Otomatis)
+function executeInternalPay() {
+    alert("Pindah Dana Berhasil! Saldo Bank Sampah bertambah & Stok otomatis terpotong.");
+    showScreen('screen-collector-dash');
+}
+
+// Update showScreen untuk menyertakan ID baru
+function showScreen(id) {
+    const screens = [
+        'screen-collector-dash', 'screen-collector-detail', 
+        'screen-price-master', 'screen-collector-report',
+        'screen-interbank-payment', 'screen-upload-proof', 
+        'screen-internal-transfer'
+    ];
+    screens.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.classList.add('hidden');
+    });
+    document.getElementById(id).classList.remove('hidden');
+}
+function showScreen(id) {
+    // Daftar semua screen ID termasuk yang baru
+    const screens = [
+        'screen-collector-dash', 'screen-collector-detail', 'screen-price-master',
+        'screen-collector-report', 'screen-interbank-payment', 'screen-upload-proof', 
+        'screen-internal-transfer'
+    ];
+    
+    screens.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.classList.add('hidden');
+    });
+    
+    const target = document.getElementById(id);
+    if(target) target.classList.remove('hidden');
+}
+
+// Fungsi Salin Teks
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Berhasil disalin: " + text);
+    });
+}
+
+// Eksekusi Pilihan di Modal
+function executePayment(method) {
+    document.getElementById('modal-transfer-type').classList.add('hidden');
+    if(method === 'Sesama Bank') {
+        showScreen('screen-internal-transfer');
+    } else {
+        showScreen('screen-interbank-payment');
+    }
+}
+
+// Final Approve Antar Bank
+function approveInterbank() {
+    alert("Verifikasi Berhasil! Status Request: SUCCESS. Stok Bank Sampah telah terpotong.");
+    showScreen('screen-collector-dash');
+}
+
+// Eksekusi Pindah Dana Sesama Bank (Internal Transfer)
+function executeInternalPay() {
+    // Generate nomor referensi transaksi secara acak untuk simulasi
+    const refID = "TRX-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+    
+    // Tampilkan respons sukses dengan Nomor Referensi
+    alert(
+        "Transaksi CBS Berhasil!\n" +
+        "Ref Transaksi: " + refID + "\n\n" +
+        "Saldo Bank Sampah bertambah & Stok otomatis terpotong."
+    );
+    
+    // Kembali ke Dashboard
+    showScreen('screen-collector-dash');
+}  showScreen('screen-collector-dash');
+
+</script>
+
+</body>
+</html>
